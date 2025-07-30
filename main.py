@@ -11,6 +11,7 @@ else:
     print(f"Python version khác: {major}.{minor}")
 
 # Ví dụ này chỉ chạy được trên Python 3.12 trở lên
+
 # Định nghĩa một hàm generic sử dụng cú pháp type parameter mới
 # def get_first_element[T](items: list[T]) -> T:
 #     if not items:
