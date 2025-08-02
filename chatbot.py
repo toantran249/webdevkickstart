@@ -9,7 +9,7 @@ import io
 load_dotenv()
 
 # Set page configuration
-st.set_page_config(page_title="Simple ChatGPT Chatbot", page_icon="🤖", layout="wide")
+st.set_page_config(page_title="ToanTran Chatbot", page_icon="🤖", layout="wide")
 
 
 def extract_text_from_pdf(pdf_file):
@@ -25,15 +25,15 @@ def extract_text_from_pdf(pdf_file):
         return None
 
 
-def create_context_message(context_text, role=""):
+def create_context_message(context_text, tone=""):
     """Create system message with context"""
     base_prompt = "You are a helpful AI assistant."
 
-    if role:
-        base_prompt = f"You are a {role}."
+    if tone:
+        base_prompt = f"Bạn là một trợ lý AI. Hãy trả lời với tông giọng {tone}."
 
     if context_text:
-        base_prompt += f"\n\nBạn có thông tin sau để tham khảo khi trả lời:\n\n{context_text}\n\nHãy sử dụng thông tin này để trả lời câu hỏi của người dùng một cách chính xác và chi tiết."
+        base_prompt += f"\n\nTham khảo những thông tin sau khi trả lời:\n\n{context_text}\n\nHãy sử dụng thông tin này để trả lời câu hỏi của người dùng một cách chính xác và chi tiết."
 
     return base_prompt
 
@@ -100,7 +100,7 @@ def main():
         st.markdown(
             """
         **Cách thêm context vào chatbot:**
-        1. **Chọn vai trò**: Chọn vai trò cho AI trong sidebar (giáo viên, bác sĩ, lập trình viên...)
+        1. **Chọn tone giọng**: Chọn tone giọng cho AI trong sidebar (bình thường, hài hước, nghiêm túc...)
         2. **Nhập text**: Viết thông tin tham khảo vào ô "Nhập context"
         3. **Upload file**: Tải lên file .txt hoặc .pdf chứa thông tin
         4. **Bắt đầu chat**: AI sẽ trả lời dựa trên context bạn cung cấp
@@ -132,22 +132,21 @@ def main():
         # Context Section
         st.subheader("📚 Thêm Context")
 
-        # Role selection
-        role_options = {
-            "": "Trợ lý AI thông thường",
-            "teacher": "Giáo viên",
-            "doctor": "Bác sĩ",
-            "lawyer": "Luật sư",
-            "programmer": "Lập trình viên",
-            "translator": "Người dịch",
-            "customer service representative": "Nhân viên chăm sóc khách hàng",
+        # Tone selection
+        tone_options = {
+            "Bình thường": "Bình thường",
+            "Hài hước": "Hài hước",
+            "Nghiêm túc": "Nghiêm túc",
+            "Thân thiện": "Thân thiện",
+            "Lạnh lùng": "Lạnh lùng",
+            "Hàn lâm": "Hàn lâm",
         }
 
-        selected_role = st.selectbox(
-            "Chọn vai trò cho AI:",
-            options=list(role_options.keys()),
-            format_func=lambda x: role_options[x],
-            key="role_select",
+        selected_tone = st.selectbox(
+            "Chọn tone giọng cho AI:",
+            options=list(tone_options.keys()),
+            format_func=lambda x: tone_options[x],
+            key="tone_select",
         )
 
         # Text context input - get value from template or keep existing
@@ -199,8 +198,8 @@ def main():
                 full_context = file_context
 
         # Update system message when context changes
-        if full_context or selected_role:
-            system_message = create_context_message(full_context, selected_role)
+        if full_context or selected_tone:
+            system_message = create_context_message(full_context, selected_tone)
             if (
                 "system_message" not in st.session_state
                 or st.session_state.system_message != system_message
@@ -215,17 +214,17 @@ def main():
 
         # Clear conversation button
         if st.button("🗑️ Xóa cuộc trò chuyện"):
-            system_message = create_context_message(full_context, selected_role)
+            system_message = create_context_message(full_context, selected_tone)
             st.session_state.messages = [{"role": "system", "content": system_message}]
             st.session_state.chat_history = []
             st.session_state.selected_template = None  # Reset template selection
             st.rerun()
 
-        st.markdown("---")
-        st.markdown("### Nội dung")
-        st.markdown(
-            "Đây là một chatbot đơn giản được xây dựng bằng Streamlit và OpenAI ChatGPT API."
-        )
+        # st.markdown("---")
+        # st.markdown("### Nội dung")
+        # st.markdown(
+        #     "Đây là một chatbot đơn giản được xây dựng bằng Streamlit và OpenAI ChatGPT API."
+        # )
 
         # Display current context info
         if full_context:
@@ -241,15 +240,18 @@ def main():
                     disabled=True,
                 )
 
-        if selected_role:
-            st.info(f"🎭 Vai trò hiện tại: {role_options[selected_role]}")
+        if selected_tone:
+            st.info(f"🎭 Tone giọng hiện tại: {tone_options[selected_tone]}")
 
-        st.markdown("### Chuẩn bị")
-        st.markdown("1. Tạo tệp `.env` trong thư mục gốc của dự án")
-        st.markdown(
-            "2. Thêm khóa API OpenAI của bạn: `OPENAI_API_KEY=your_api_key_here`"
-        )
-        st.markdown("3. Chạy với: `streamlit run chatbot.py`")
+        # st.markdown("### Chuẩn bị")
+        # st.markdown("1. Tạo tệp `.env` trong thư mục gốc của dự án")
+        # st.markdown(
+        #     "2. Thêm khóa API OpenAI của bạn: `OPENAI_API_KEY=your_api_key_here`"
+        # )
+        # st.markdown("3. Chạy với: `streamlit run chatbot.py`")
+
+        st.markdown("---")
+        st.markdown("🎭 Made by [ToanTran](https://toantran.dev)")
 
     # Display chat history
     for i, (user_msg, bot_msg) in enumerate(st.session_state.chat_history):
@@ -280,6 +282,7 @@ def main():
 
             # Rerun to update the display
             st.rerun()
+
 
 
 if __name__ == "__main__":
