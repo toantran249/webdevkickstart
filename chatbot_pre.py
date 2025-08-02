@@ -5,138 +5,81 @@ from dotenv import load_dotenv
 import PyPDF2
 import io
 
-# Load environment variables
+# Tải biến môi trường
 load_dotenv()
 
-# Set page configuration
+# Thiết lập cấu hình trang
 st.set_page_config(page_title="Simple ChatGPT Chatbot", page_icon="🤖", layout="wide")
 
 
 def extract_text_from_pdf(pdf_file):
-    """Extract text from uploaded PDF file"""
+    """Hàm trích xuất văn bản từ file PDF hoặc TXT đã tải lên.
+    Đầu vào là file đã tải lên, đầu ra là chuỗi văn bản"""
+    return
 
 
 def create_context_message(context_text, role=""):
-    """Create system message with context"""
+    """Tạo thông điệp hệ thống với context.
+    Đầu vào là văn bản context và vai trò, đầu ra là chuỗi thông điệp hệ thống"""
+    return
 
 
 def initialize_openai():
-    """Initialize OpenAI client with API key"""
+    """Khởi tạo client OpenAI với khóa API.
+    Đầu ra là client OpenAI đã khởi tạo"""
+    return
 
 
 def get_chatgpt_response(messages, client=None):
-    """Get response from ChatGPT API"""
+    """Lấy phản hồi từ API ChatGPT.
+    Đầu vào là danh sách tin nhắn, đầu ra là phản hồi từ ChatGPT"""
+    return
 
 
 def main():
-    # Initialize OpenAI
+    # Khởi tạo client OpenAI
     openai_client = initialize_openai()
 
-    # App title and description
+    # Tiêu đề và mô tả với st.title và st.markdown
     st.title("🤖 Simple ChatGPT Chatbot")
     st.markdown(
         "Chào mừng bạn đến với trợ lý AI cá nhân của mình! Hãy hỏi tôi bất cứ điều gì."
     )
 
-    # Instructions
+    # Tạo box hướng dẫn với st.expander và st.markdown
+    ##### CODE SNIPPET START #####
 
-    # Initialize session state for conversation history
+    # Khởi tạo trạng thái phiên cho lịch sử cuộc trò chuyện
+    # Dùng st.session_state để lưu trữ trạng thái cuộc trò chuyện
+    ##### CODE SNIPPET START #####
 
-    # Sidebar for settings
+    # Khởi tạo sidebar với st.sidebar
+    ##### CODE SNIPPET START #####
     with st.sidebar:
         st.header("⚙️ Cài đặt")
 
-        # Context Section
+        # Mục Context
         st.subheader("📚 Thêm Context")
 
-        # Role selection
-        role_options = {
-            "": "Trợ lý AI thông thường",
-            "teacher": "Giáo viên",
-            "doctor": "Bác sĩ",
-            "lawyer": "Luật sư",
-            "programmer": "Lập trình viên",
-            "translator": "Người dịch",
-            "customer service representative": "Nhân viên chăm sóc khách hàng",
-        }
+        # Chọn vai trò AI
+        # Tạo dropdown menu với st.selectbox
 
-        selected_role = st.selectbox(
-            "Chọn vai trò cho AI:",
-            options=list(role_options.keys()),
-            format_func=lambda x: role_options[x],
-            key="role_select",
-        )
+        # Nhập context thù công bằng text area
 
-        # Text context input - get value from template or keep existing
-        context_text = st.text_area(
-            "Nhập context/thông tin tham khảo:",
-            height=150,
-            placeholder="Nhập thông tin mà bạn muốn AI sử dụng để trả lời câu hỏi...",
-            value=(st.session_state.get("context_text", "")),
-            key="context_input",
-        )
+        # Lưu context vào session state
 
-        # Store context text in session state
-        st.session_state.context_text = context_text
+        # Hiển thị độ dài context và nút xóa context
 
-        # Show character count and clear button
-        if context_text:
-            col1, col2 = st.columns([3, 1])
-            with col1:
-                st.caption(f"📊 Độ dài context: {len(context_text)} ký tự")
-            with col2:
-                if st.button("🗑️", key="clear_context", help="Xóa context"):
-                    st.session_state.context_text = ""
-                    st.rerun()
+        # Tải lên file context nếu không muốn nhập tay
+        # Hỗ trợ file .txt và .pdf
 
-        # File upload
-        uploaded_file = st.file_uploader(
-            "Hoặc upload file:", type=["txt", "pdf"], help="Hỗ trợ file .txt và .pdf"
-        )
+        # Xử lý file đã tải lên và thêm vào file_context
 
-        # Process uploaded file
-        file_context = ""
-        if uploaded_file is not None:
-            if uploaded_file.type == "text/plain":
-                file_context = str(uploaded_file.read(), "utf-8")
-                st.success(f"✅ Đã tải file: {uploaded_file.name}")
-            elif uploaded_file.type == "application/pdf":
-                file_context = extract_text_from_pdf(uploaded_file)
-                if file_context:
-                    st.success(f"✅ Đã tải file PDF: {uploaded_file.name}")
+        # Kết hợp context từ text area và file
 
-        # Combine contexts
-        full_context = ""
-        if context_text:
-            full_context += context_text
-        if file_context:
-            if full_context:
-                full_context += "\n\n" + file_context
-            else:
-                full_context = file_context
+        # Cập nhật thông điệp cho hệ thống nếu context thay đổi
 
-        # Update system message when context changes
-        if full_context or selected_role:
-            system_message = create_context_message(full_context, selected_role)
-            if (
-                "system_message" not in st.session_state
-                or st.session_state.system_message != system_message
-            ):
-                st.session_state.system_message = system_message
-                # Reset conversation with new context
-                st.session_state.messages = [
-                    {"role": "system", "content": system_message}
-                ]
-                st.session_state.chat_history = []
-                st.success("🔄 Đã cập nhật context!")
-
-        # Clear conversation button
-        if st.button("🗑️ Xóa cuộc trò chuyện"):
-            system_message = create_context_message(full_context, selected_role)
-            st.session_state.messages = [{"role": "system", "content": system_message}]
-            st.session_state.chat_history = []
-            st.session_state.selected_template = None  # Reset template selection
-            st.rerun()
+        # Tạo nút xóa cuộc trò chuyện và giữ nguyên thông điệp hệ thống
 
         st.markdown("---")
         st.markdown("### Nội dung")
@@ -144,22 +87,9 @@ def main():
             "Đây là một chatbot đơn giản được xây dựng bằng Streamlit và OpenAI ChatGPT API."
         )
 
-        # Display current context info
-        if full_context:
-            with st.expander("📄 Context hiện tại"):
-                st.text_area(
-                    "",
-                    value=(
-                        full_context[:500] + "..."
-                        if len(full_context) > 500
-                        else full_context
-                    ),
-                    height=100,
-                    disabled=True,
-                )
+        # Hiển thị context hiện tại nếu có
 
-        if selected_role:
-            st.info(f"🎭 Vai trò hiện tại: {role_options[selected_role]}")
+        # Hiện thị vai trò hiện tại nếu có
 
         st.markdown("### Chuẩn bị")
         st.markdown("1. Tạo tệp `.env` trong thư mục gốc của dự án")
@@ -168,9 +98,9 @@ def main():
         )
         st.markdown("3. Chạy với: `streamlit run chatbot.py`")
 
-    # Display chat history
+    # Hiển thị lịch sử trò chuyện trong st.session_state.chat_history với st.markdown
 
-    # Chat input
+    # Đầu vào câu hỏi từ người dùng với st.chat_input
 
 
 if __name__ == "__main__":
