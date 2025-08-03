@@ -4,10 +4,11 @@ verify_ssl = true
 name = "pypi"
 
 [packages]
-streamlit = "*"
-openai = "*"
 python-dotenv = "*"
-PyPDF2="*"
+openai = "*"
+load-dotenv = "*"
+pypdf2 = "*"
+streamlit = "*"
 
 [dev-packages]
 
